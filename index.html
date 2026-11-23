@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIPRA PRRS 生物安全評估系統</title>
+  <style>
+    :root {
+      --primary: #0f4c81;
+      --primary-light: #e8f1f8;
+      --accent: #009688;
+      --bg: #f4f7fa;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --good: #16a34a;
+      --good-bg: #dcfce7;
+      --warn: #d97706;
+      --warn-bg: #fef3c7;
+      --risk: #dc2626;
+      --risk-bg: #fee2e2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    /* Header */
+    .topbar {
+      background: linear-gradient(135deg, #0b3960 0%, #0f4c81 60%, #1565a8 100%);
+      color: #fff;
+      padding: 24px 20px 72px;
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-badge {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.28);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      font-size: 15px;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .topbar p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      border-radius: 9px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-white {
+      background: #fff;
+      color: var(--primary);
+    }
+    .btn-white:hover { background: #f1f5f9; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.24); }
+    .btn-ghost.active {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1180px;
+      margin: -48px auto 48px;
+      padding: 0 20px;
+    }
+
+    /* Summary KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .kpi-info h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .kpi-score {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .gauge-wrap {
+      width: 78px;
+      height: 78px;
+      flex-shrink: 0;
+    }
+
+    /* Farm Info Card */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #fafcff;
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 17px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-pill {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      padding: 18px 22px;
+    }
+    .meta-item label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .meta-item input {
+      width: 100%;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      background: #f8fafc;
+    }
+    .meta-item input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    /* Dashboard Grid */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 20px;
+      padding: 20px 22px;
+    }
+    .bar-row {
+      margin-bottom: 13px;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .bar-track {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0f4c81, #009688);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .top-risk-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .risk-item {
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      border-radius: 10px;
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .risk-item.low {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+    .risk-rank {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--risk);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .risk-item.low .risk-rank { background: var(--good); }
+    .risk-q {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .risk-a {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .risk-pts {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: var(--risk-bg);
+      color: var(--risk);
+      white-space: nowrap;
+    }
+    .risk-item.low .risk-pts {
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    /* Section Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .nav-tab {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .nav-tab:hover, .nav-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Question Groups */
+    .sub-header {
+      padding: 11px 22px;
+      background: #f1f5f9;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sub-note {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+    .q-row {
+      display: grid;
+      grid-template-columns: 1fr 300px 86px;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 22px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s;
+    }
+    .q-row:last-child { border-bottom: none; }
+    .q-row:hover { background: #f8fafc; }
+    .q-row.high-risk { background: #fff9f9; }
+    .q-row.hidden-row { display: none; }
+    .q-text {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .q-select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .q-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+    }
+    .status-pill {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .st-ok { background: var(--good-bg); color: var(--good); }
+    .st-mid { background: var(--warn-bg); color: var(--warn); }
+    .st-bad { background: var(--risk-bg); color: var(--risk); }
+    .st-neutral { background: #f1f5f9; color: #64748b; }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .dash-grid { grid-template-columns: 1fr; }
+      .q-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .status-pill { width: fit-content; }
+    }
+
+    @media print {
+      .topbar { padding: 16px; }
+      .actions, .nav-tabs { display: none !important; }
+      .container { margin-top: 16px; }
+      .card { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-badge">HIPRA</div>
+        <div>
+          <h1>PRRS 生物安全評估系統（繁體中文版）</h1>
+          <p>互動式豬場內／外部生物安全風險診斷與即時評分報告</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="btnFilterRisk" onclick="toggleRiskFilter()">⚠️ 僅顯示需改善項目</button>
+        <button class="btn btn-ghost" onclick="resetDefaults()">↺ 還原預設資料</button>
+        <button class="btn btn-white" onclick="window.print()">🖨️ 列印 / 匯出 PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top 3 KPI Scores -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h3>整體生物安全分數 (Global)</h3>
+          <div class="kpi-score" id="scoreGlobal">87.1%</div>
+          <div class="kpi-sub" id="riskGlobal">綜合風險指數：12.9%</div>
+        </div>
+        <div class="gauge-wrap" id="gaugeGlobal"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h3>內部生物安全分數 (Internal)</h3>
+          <div class="kpi-score" id="scoreInternal">87.8%</div>
+          <div class="kpi-sub" id="riskInternal">內部風險指數：12.2%</div>
+        </div>
+        <div class="gauge-wrap" id="gaugeInternal"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h3>外部生物安全分數 (External)</h3>
+          <div class="kpi-score" id="scoreExternal">86.9%</div>
+          <div class="kpi-sub" id="riskExternal">外部風險指數：13.1%</div>
+        </div>
+        <div class="gauge-wrap" id="gaugeExternal"></div>
+      </div>
+    </section>
+
+    <!-- Farm Metadata -->
+    <section class="card">
+      <div class="card-header">
+        <h2>📋 牧場與評估基本資訊</h2>
+        <span class="badge-pill">可直接在欄位內編輯</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <label>評估單位 / 公司</label>
+          <input type="text" id="metaCompany" value="台灣海博萊" />
+        </div>
+        <div class="meta-item">
+          <label>牧場名稱</label>
+          <input type="text" id="metaFarm" value="珠慧大牧場" />
+        </div>
+        <div class="meta-item">
+          <label>牧場地點</label>
+          <input type="text" id="metaLocation" value="雲林縣麥寮鄉" />
+        </div>
+        <div class="meta-item">
+          <label>評估日期</label>
+          <input type="text" id="metaDate" value="2026.06.06" />
+        </div>
+        <div class="meta-item">
+          <label>評估獸醫師</label>
+          <input type="text" id="metaVet" value="曾惠智獸醫師" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard: 7 Dimensions + Top 5 Risks -->
+    <section class="card">
+      <div class="card-header">
+        <h2>📊 生物安全評估結果總覽</h2>
+        <span class="badge-pill">依選項即時動態計算</span>
+      </div>
+      <div class="dash-grid">
+        <div>
+          <h3 style="margin:0 0 14px; font-size:15px; color:#334155;">七大生物安全構面得分</h3>
+          <div id="dimensionBars"></div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 14px; font-size:15px; color:#334155;">Top 5 最需優先改善項目（最高風險因子）</h3>
+          <div class="top-risk-list" id="topRiskList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Filter Tabs -->
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" onclick="filterSection('all', this)">全部顯示 (84題)</button>
+      <button class="nav-tab" onclick="filterSection('sec-general', this)">基本資料與 PRRS 狀況</button>
+      <button class="nav-tab" onclick="filterSection('sec-internal', this)">內部生物安全</button>
+      <button class="nav-tab" onclick="filterSection('sec-external', this)">外部生物安全</button>
+    </div>
+
+    <!-- Questionnaire Container -->
+    <div id="questionnaire"></div>
+  </main>
+
+  <script>
+    // Complete 84-question schema with exact weights from 'Breeders (key)' and formulas from 'Resultados'
+    const QUESTIONS = [
+      // General Characteristics (resRow 3..5)
+      { id: "q3", section: "sec-general", group: "基本資料", text: "母豬頭數", val: ">= 3000", opts: [{l:">= 3000",w:1},{l:"2000-2900",w:1},{l:"800-1999",w:1},{l:"799-300",w:1},{l:"<300",w:1}], neutral: true },
+      { id: "q5", section: "sec-general", group: "基本資料", text: "飼養模式", val: "一貫場", opts: [{l:"一貫場",w:20},{l:"母豬場",w:10},{l:"種豬場",w:10}] },
+      { id: "q4", section: "sec-general", group: "基本資料", text: "第一、二胎母豬平均佔比", val: "50-30 %", opts: [{l:"> 50 %",w:50},{l:"50-30 %",w:30},{l:"< 30 %",w:1}] },
+
+      // PRRS Status (resRow 6..10)
+      { id: "q6", section: "sec-general", group: "場內 PRRS 狀況", text: "場內目前 PRRS 狀況", val: "陽性不穩定", opts: [{l:"陽性不穩定",w:1},{l:"陽性穩定",w:1},{l:"陰性",w:1}], neutral: true },
+      { id: "q7", section: "sec-general", group: "場內 PRRS 狀況", text: "近兩年內 PRRS 爆發次數", val: ">3", opts: [{l:">3",w:20},{l:"1-3",w:10},{l:"0",w:1}] },
+      { id: "q8", section: "sec-general", group: "場內 PRRS 狀況", text: "這些 PRRS 疫情中有多少次是由新的病毒株引起的？", val: "1-3", opts: [{l:">3",w:1},{l:"1-3",w:1},{l:"0",w:1},{l:"我不知道",w:1}], neutral: true },
+      { id: "q9", section: "sec-general", group: "場內 PRRS 狀況", text: "這些 PRRS 疫情中有多少次是由舊有病毒株引起的？", val: "0", opts: [{l:">3",w:1},{l:"1-3",w:1},{l:"0",w:1},{l:"我不知道",w:1}], neutral: true },
+      { id: "q10", section: "sec-general", group: "場內 PRRS 狀況", text: "最後一次 PRRS 疫情爆發距今多久？", val: "< 6 個月", opts: [{l:">= 3 年",w:1},{l:">=1 年 <3 年",w:1},{l:"< 1 年  >= 6 個月",w:1},{l:"< 6 個月",w:1}], neutral: true },
+
+      // Internal Biosecurity - Management (resRow 11..19)
+      { id: "q11", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "母豬接種疫苗時更換針頭的頻率", val: "1 頭/針", opts: [{l:">= 16 頭/針",w:62},{l:"6-15 頭/針",w:45},{l:"2-5 頭/針",w:16},{l:"1 頭/針",w:1}] },
+      { id: "q12", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "仔豬接種疫苗時更換針頭的頻率", val: "一窩一針頭", opts: [{l:"只有在彎曲或是斷針",w:62},{l:"一棟產房一針頭",w:50},{l:"一窩一針頭",w:10},{l:"一頭一針頭",w:1}] },
+      { id: "q13", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "寄養方式（交叉寄養程序）", val: "離乳前都會做", opts: [{l:"只有在出生24小時內",w:1},{l:"只有在出生3天內",w:10},{l:"離乳前都會做",w:60}] },
+      { id: "q14", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "如何利用奶媽母豬來管理多出生的仔豬", val: "是，將奶媽母豬移到該產房哺乳", opts: [{l:"否",w:1},{l:"是，將奶媽母豬移到該產房哺乳",w:10},{l:"是，多餘的小豬會被轉移到另一個產房哺乳",w:80}] },
+      { id: "q16", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "會在不同批次間轉移豬隻嗎", val: "否", opts: [{l:"是",w:110},{l:"否",w:1}] },
+      { id: "q15", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "會在不同批次間做清洗嗎", val: "乾燥，清洗及消毒", opts: [{l:"否",w:120},{l:"是, 只有清洗",w:60},{l:"是, 清洗及消毒",w:30},{l:"乾燥，清洗及消毒",w:1}] },
+      { id: "q17", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "在不同的生產區域之間是否會更換衣服和雨鞋？", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q18", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "不同生產區域之間是否有人員流動限制？", val: "工人在不同生產區域之間的工作受到限制", opts: [{l:"工人只能在單一生產區域工作",w:1},{l:"工人在不同生產區域之間的工作受到限制",w:30},{l:"不同生產區域之間沒有受限的工作流程",w:60}] },
+      { id: "q19", section: "sec-internal", group: "內部生物安全｜操作管理方式", text: "豬隻的流動方向總是單一（前進式）", val: "是", opts: [{l:"是",w:1},{l:"否",w:110}] },
+
+      // Internal Biosecurity - Acclimatization & Vaccine (resRow 20..28)
+      { id: "q20", section: "sec-internal", group: "內部生物安全｜場內新女豬 PRRS 馴化管理", text: "自然接觸（無血清）", val: "否", opts: [{l:"活體動物",w:76},{l:"組織及糞便",w:62},{l:"否",w:1}] },
+      { id: "q21", section: "sec-internal", group: "內部生物安全｜場內新女豬 PRRS 馴化管理", text: "控制性接觸 PRRSV 感染豬的血清", val: "否", opts: [{l:"是",w:110},{l:"否",w:1}] },
+      { id: "q22", section: "sec-internal", group: "內部生物安全｜場內新女豬 PRRS 馴化管理", text: "從接觸到進入繁殖群的天數", val: "> 60 天", opts: [{l:"0 天",w:75},{l:"0-30 天",w:65},{l:"30-60 天",w:40},{l:"> 60 天",w:1}] },
+
+      { id: "q23", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "新女豬免疫 PRRS 疫苗", val: "是", opts: [{l:"是",w:1},{l:"否",w:40}] },
+      { id: "q27", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "新女豬免疫計畫", val: "進入繁殖群前至少兩次", opts: [{l:"進入繁殖群前",w:1},{l:"進入繁殖群前至少兩次",w:1}], neutral: true },
+      { id: "q24", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "經產母豬免疫 PRRS 疫苗", val: "是", opts: [{l:"是",w:1},{l:"否",w:40}] },
+      { id: "q28", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "經產母豬免疫計畫", val: "群體免疫 >= 4 次/年", opts: [{l:"群體免疫 <= 2 次/年",w:1},{l:"1 次/週期",w:1},{l:"群體免疫3次/年",w:1},{l:"2 次/週期 (哺乳及懷孕期)",w:1},{l:"群體免疫 >= 4 次/年",w:1}], neutral: true },
+      { id: "q25", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "仔豬免疫 PRRS 疫苗", val: "是", opts: [{l:"是",w:1},{l:"否",w:20}] },
+      { id: "q26", section: "sec-internal", group: "內部生物安全｜PRRS 免疫方式", text: "仔豬免疫計畫", val: "1-2周齡", opts: [{l:"1-2周齡",w:1},{l:"3 周齡",w:1},{l:"4 周齡",w:1}], neutral: true },
+
+      // External Biosecurity - Replacement Animals (resRow 29..39)
+      { id: "q30", section: "sec-external", group: "外部生物安全｜種豬更新", text: "新女豬來源", val: "自繁", opts: [{l:"自繁",w:1},{l:"外購",w:1}], neutral: true },
+      { id: "q31", section: "sec-external", group: "外部生物安全｜種豬更新", text: "牧場自繁運作多久了", val: "2或更多年前開始", opts: [{l:"經常",w:1},{l:"去年開始",w:1},{l:"2或更多年前開始",w:1}], neutral: true },
+      { id: "q32", section: "sec-external", group: "外部生物安全｜種豬更新", text: "自繁女豬是否離開過牧場", val: "否", opts: [{l:"是",w:100},{l:"否",w:1}] },
+      { id: "q29", section: "sec-external", group: "外部生物安全｜種豬更新", text: "近兩年新女豬購入數量（供應商數）", val: "0", opts: [{l:">= 4",w:114},{l:"3",w:100},{l:"2",w:50},{l:"1",w:1},{l:"0",w:0}] },
+      { id: "q37", section: "sec-external", group: "外部生物安全｜種豬更新", text: "新女豬馴化時間", val: "> 120 天", opts: [{l:"0 天",w:97},{l:"1-60 天",w:87},{l:"61-90 天",w:50},{l:"91-120 天",w:25},{l:"> 120 天",w:1}] },
+      { id: "q33", section: "sec-external", group: "外部生物安全｜種豬更新", text: "檢疫舍中新女豬的管理方式", val: "連續式", opts: [{l:"連續式",w:103},{l:"統進統出",w:1}] },
+      { id: "q34", section: "sec-external", group: "外部生物安全｜種豬更新", text: "進入農場時，新女豬飼養位置", val: "新引進的女豬在豬場內有特定的固定位置", opts: [{l:"新引進的女豬進入豬群後，會與老母豬混群",w:80},{l:"新引進的女豬在豬場內有特定的固定位置",w:50},{l:"新引進的女豬在隔離區進行繁殖，並在確認懷孕後進入農場",w:10},{l:"新引進的女豬在隔離區繁殖，僅在分娩時進入農場",w:1}] },
+      { id: "q35", section: "sec-external", group: "外部生物安全｜種豬更新", text: "檢疫舍是否有專用的工作服及雨鞋", val: "否", opts: [{l:"是",w:100},{l:"否",w:1}] },
+      { id: "q36", section: "sec-external", group: "外部生物安全｜種豬更新", text: "巡視檢疫舍是否有嚴格的規定（首先/最後巡視哪個棟舍）", val: "否", opts: [{l:"是",w:100},{l:"否",w:1}] },
+      { id: "q38", section: "sec-external", group: "外部生物安全｜種豬更新", text: "進入或離開檢疫舍前進行健檢（PCR 和 ELISA）", val: "僅在移出時（至少進行PCR檢測）", opts: [{l:"否",w:120},{l:"僅在進入時（至少進行PCR檢測）",w:80},{l:"僅在移出時（至少進行PCR檢測）",w:40},{l:"進入及移出都做（至少進行PCR檢測）",w:1}] },
+      { id: "q39", section: "sec-external", group: "外部生物安全｜種豬更新", text: "場內多久會引進一批新的女豬", val: "> 6 個月", opts: [{l:"< o = 4 週",w:120},{l:"4 週 - 3 個月",w:90},{l:"3-6 個月",w:50},{l:"> 6 個月",w:1}] },
+
+      // External Biosecurity - Semen (resRow 40..44)
+      { id: "q40", section: "sec-external", group: "外部生物安全｜精液", text: "配種精液來源", val: "自繁", opts: [{l:"自繁",w:1},{l:"外購",w:25}] },
+      { id: "q41", section: "sec-external", group: "外部生物安全｜精液", text: "公豬群的 PRRS 狀況", val: "陰性", opts: [{l:"陽性",w:127},{l:"陰性",w:1},{l:"未知",w:127}] },
+      { id: "q42", section: "sec-external", group: "外部生物安全｜精液", text: "公豬群是否以 ELISA 和 PCR 檢測 PRRS", val: "是，兩者都做", opts: [{l:"是，兩者都做",w:1},{l:"是，但只有PCR",w:60},{l:"否或未知",w:100}] },
+      { id: "q43", section: "sec-external", group: "外部生物安全｜精液", text: "公豬群多久檢查一次 PRRS 感染情形", val: "每月", opts: [{l:"每月",w:1},{l:"每三個月",w:25},{l:"每年",w:50},{l:"未知",w:100}] },
+      { id: "q44", section: "sec-external", group: "外部生物安全｜精液", text: "公豬群使用哪一種樣本進行診斷？", val: "血清", opts: [{l:"精液",w:60},{l:"血清",w:1},{l:"未知",w:100}] },
+
+      // External Biosecurity - Loading Bays (resRow 57..61)
+      { id: "q57", section: "sec-external", group: "外部生物安全｜裝卸區碼頭（出豬平台）", text: "是否有區分用於外部動物運輸（淘汰母豬、送往屠宰場的肉豬）和內部動物運輸（仔豬）的裝卸區碼頭？", val: "否", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q59", section: "sec-external", group: "外部生物安全｜裝卸區碼頭（出豬平台）", text: "這些中轉區是否有外部/內部專用裝卸區碼頭？", val: "否", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q58", section: "sec-external", group: "外部生物安全｜裝卸區碼頭（出豬平台）", text: "車輛/駕駛員是否進入農場裝卸區裝載豬隻", val: "是", opts: [{l:"是",w:50},{l:"否",w:1}] },
+      { id: "q60", section: "sec-external", group: "外部生物安全｜裝卸區碼頭（出豬平台）", text: "裝卸區的清潔頻率", val: "每次", opts: [{l:"從不、很少或未知",w:50},{l:"有時候",w:36},{l:"每次",w:1}] },
+      { id: "q61", section: "sec-external", group: "外部生物安全｜裝卸區碼頭（出豬平台）", text: "裝卸區的清潔方式", val: "乾燥，清洗及消毒", opts: [{l:"溫水清洗",w:30},{l:"乾燥，清洗及消毒",w:1}] },
+
+      // External Biosecurity - Transport Slaughterhouse (resRow 45..50)
+      { id: "q45", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "有專用車輛將動物運送到屠宰廠", val: "唯一的目的地是屠宰廠", opts: [{l:"唯一的目的地是屠宰廠",w:1},{l:"化製場和其他目的地",w:76}] },
+      { id: "q46", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "這些車輛的清洗頻率", val: "每次", opts: [{l:"從不、很少或未知",w:50},{l:"有時候",w:36},{l:"每次",w:1}] },
+      { id: "q47", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "淘汰豬車到場路線（車上是否有其他豬隻）", val: "抵達時總是空無一物且乾淨整潔", opts: [{l:"抵達時總是空無一物且乾淨整潔",w:1},{l:"到達時總是空的",w:20},{l:"有時會有其他豬場的豬隻",w:36},{l:"經常會有其他豬場的豬隻",w:50}] },
+      { id: "q50", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "要求駕駛需要在不同地點之間更換衣物並對雨鞋進行消毒", val: "是", opts: [{l:"是",w:1},{l:"否",w:48}] },
+      { id: "q48", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "車輛清潔控制", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q49", section: "sec-external", group: "外部生物安全｜動物運輸（淘汰動物）", text: "車輛消毒和乾燥的控制", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+
+      // External Biosecurity - Transport Live Animals (resRow 51..56)
+      { id: "q51", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "有專用車輛將動物運送到其他地點（非屠宰場）", val: "是", opts: [{l:"是",w:1},{l:"否",w:76}] },
+      { id: "q52", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "這些車輛的清洗頻率", val: "每次", opts: [{l:"從不、很少或未知",w:50},{l:"有時候",w:36},{l:"每次",w:1}] },
+      { id: "q53", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "活體運輸車到場路線（車上是否有其他豬隻）", val: "到達時總是空的", opts: [{l:"抵達時總是空無一物且乾淨整潔",w:1},{l:"到達時總是空的",w:20},{l:"有時會有其他豬場的豬隻",w:36},{l:"經常會有其他豬場的豬隻",w:50}] },
+      { id: "q56", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "要求駕駛需要在不同地點之間更換衣物並對雨鞋進行消毒", val: "是", opts: [{l:"是",w:1},{l:"否",w:48}] },
+      { id: "q54", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "車輛清潔控制", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q55", section: "sec-external", group: "外部生物安全｜動物運輸（活體動物）", text: "車輛消毒和乾燥的控制", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+
+      // External Biosecurity - Feed Transport (resRow 62..64)
+      { id: "q62", section: "sec-external", group: "外部生物安全｜其他運輸（飼料）", text: "豬場飼料供應是否有依照 PRRS 等級運輸", val: "同一輛卡車絕不會同時向PRRS陽性和陰性養殖場運送飼料", opts: [{l:"沒有限制，同一輛卡車可以向PRRS陽性、陰性或未感染地區運送飼料",w:86},{l:"同一輛卡車可以向PRRS陽性和陰性地點運送飼料，但需要盡可能減少停留時間。",w:30},{l:"同一輛卡車絕不會同時向PRRS陽性和陰性養殖場運送飼料",w:1}] },
+      { id: "q63", section: "sec-external", group: "外部生物安全｜其他運輸（飼料）", text: "司機卸貨時穿雨鞋嗎", val: "是", opts: [{l:"是",w:1},{l:"否",w:30}] },
+      { id: "q64", section: "sec-external", group: "外部生物安全｜其他運輸（飼料）", text: "所有的飼料槽都是從牧場圍牆外下料嗎", val: "否", opts: [{l:"是",w:1},{l:"否",w:30}] },
+
+      // External Biosecurity - Other Measures (resRow 65..78)
+      { id: "q65", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "停車位置", val: "豬場邊界之外", opts: [{l:"豬場邊界之外",w:1},{l:"豬場邊界之內",w:25}] },
+      { id: "q66", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "動物屍體是否就地處理（掩埋、丟棄…）", val: "否", opts: [{l:"否",w:9},{l:"是",w:1}] },
+      { id: "q68", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "鄰近農場（<500 公尺）是否使用其他養豬場的糞漿", val: "否", opts: [{l:"否",w:1},{l:"是",w:60}] },
+      { id: "q69", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "糞漿是如何運走", val: "豬場設備", opts: [{l:"豬場設備",w:1},{l:"外部接觸者設備",w:50}] },
+      { id: "q70", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "如果是外聘承包商，他們是否會在不同牧場之間清洗設備", val: "是", opts: [{l:"是",w:1},{l:"否",w:50}] },
+      { id: "q67", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "存放動物屍體的位置", val: "豬場邊界之外", opts: [{l:"豬場邊界之外",w:1},{l:"豬場邊界之內",w:62}] },
+      { id: "q73", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "員工數目", val: ">10", opts: [{l:"1-5",w:1},{l:"6-10",w:10},{l:">10",w:25}] },
+      { id: "q71", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "員工和訪客進入場內的衛生程序", val: "淋浴進/淋浴出", opts: [{l:"淋浴進/淋浴出",w:1},{l:"無淋浴進/無淋浴出",w:100}] },
+      { id: "q72", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "清潔區/污染區入口處是否有實體屏障將其分隔開", val: "是", opts: [{l:"否",w:50},{l:"是",w:1}] },
+      { id: "q74", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "如果在過去 24 小時內參觀過其他養豬場，進入本牧場是否需要等待一段時間", val: "是", opts: [{l:"否",w:50},{l:"是",w:1}] },
+      { id: "q75", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "如果是，空場等待時間有多長", val: "24小時", opts: [{l:"12小時",w:30},{l:"24小時",w:15},{l:"48小時",w:1}] },
+      { id: "q76", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "從外部進入的工具是否需要消毒", val: "是", opts: [{l:"是",w:1},{l:"否",w:25}] },
+      { id: "q77", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "農場周圍是否有圍欄", val: "是", opts: [{l:"是",w:1},{l:"否",w:25}] },
+      { id: "q78", section: "sec-external", group: "外部生物安全｜其他生物安全措施", text: "綜合蟲害管理", val: "以上全部", opts: [{l:"老鼠",w:3},{l:"野鳥",w:3},{l:"蚊蠅",w:3},{l:"以上全部",w:1},{l:"完全沒有",w:10}] },
+
+      // External Biosecurity - Location (resRow 79..86)
+      { id: "q79", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "3 公里半徑內的牧場密度（養豬場數）", val: "0", opts: [{l:"0",w:1},{l:"1",w:5},{l:"1-3",w:10},{l:">3",w:20}] },
+      { id: "q80", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "到最近的牧場的距離（公里）", val: ">3 公里", opts: [{l:"1公里",w:20},{l:"1-3 公里",w:10},{l:">3 公里",w:1}] },
+      { id: "q81", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "最近的牧場生產系統類型", val: "一貫場", opts: [{l:"種豬場",w:1},{l:"一貫場",w:15},{l:"母豬場",w:20},{l:"肉豬場",w:10}] },
+      { id: "q82", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "最近的牧場 PRRS 狀態", val: "陽性", opts: [{l:"未知",w:20},{l:"陽性",w:15},{l:"陰性",w:1}] },
+      { id: "q85", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "離最近的公共道路的距離（公里）", val: "< 1 公里", opts: [{l:"1-3 公里",w:20},{l:">3 公里",w:10},{l:"< 1 公里",w:1}] },
+      { id: "q83", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "到最近屠宰場的距離（公里）", val: ">3 公里", opts: [{l:"1-3 公里",w:20},{l:">3 公里",w:10},{l:"< 1 公里",w:1}] },
+      { id: "q84", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "到最近飼料廠的距離（公里）", val: ">3 公里", opts: [{l:"1-3 公里",w:20},{l:">3 公里",w:10},{l:"< 1 公里",w:1}] },
+      { id: "q86", section: "sec-external", group: "外部生物安全｜豬場地理位置", text: "牧場區域的地形", val: "平地", opts: [{l:"平地",w:20},{l:"丘陵地",w:10},{l:"山區",w:1}] }
+    ];
+
+    const state = {};
+    let onlyRisk = false;
+
+    function initState() {
+      QUESTIONS.forEach(q => { state[q.id] = q.val; });
+    }
+
+    function getWeight(q) {
+      const found = q.opts.find(o => o.l === state[q.id]);
+      return found ? found.w : 1;
+    }
+
+    function renderQuestionnaire() {
+      const container = document.getElementById("questionnaire");
+      container.innerHTML = "";
+
+      const sectionTitles = {
+        "sec-general": "一、基本資料與場內 PRRS 狀況",
+        "sec-internal": "二、內部生物安全評估 (Internal Biosecurity)",
+        "sec-external": "三、外部生物安全評估 (External Biosecurity)"
+      };
+
+      ["sec-general", "sec-internal", "sec-external"].forEach(secKey => {
+        const secCard = document.createElement("section");
+        secCard.className = "card sec-block";
+        secCard.dataset.section = secKey;
+
+        const secQuestions = QUESTIONS.filter(q => q.section === secKey);
+        secCard.innerHTML = `
+          <div class="card-header">
+            <h2>${sectionTitles[secKey]}</h2>
+            <span class="badge-pill">共 ${secQuestions.length} 題</span>
+          </div>
+        `;
+
+        let currentGroup = "";
+        secQuestions.forEach(q => {
+          if (q.group !== currentGroup) {
+            currentGroup = q.group;
+            const sub = document.createElement("div");
+            sub.className = "sub-header";
+            sub.innerHTML = `<span>${currentGroup}</span><span class="sub-note">風險權重越低代表生物安全越佳</span>`;
+            secCard.appendChild(sub);
+          }
+
+          const row = document.createElement("div");
+          row.className = "q-row";
+          row.id = `row_${q.id}`;
+
+          const optionsHtml = q.opts.map(o =>
+            `<option value="${o.l}" ${state[q.id] === o.l ? "selected" : ""}>${o.l}</option>`
+          ).join("");
+
+          row.innerHTML = `
+            <div class="q-text">${q.text}</div>
+            <div>
+              <select class="q-select" onchange="onSelectChange('${q.id}', this.value)">
+                ${optionsHtml}
+              </select>
+            </div>
+            <div class="status-pill" id="badge_${q.id}"></div>
+          `;
+          secCard.appendChild(row);
+        });
+
+        container.appendChild(secCard);
+      });
+
+      recalculate();
+    }
+
+    function onSelectChange(qid, newVal) {
+      state[qid] = newVal;
+      recalculate();
+    }
+
+    function drawGauge(elId, pct) {
+      const clamped = Math.max(0, Math.min(100, pct));
+      const color = clamped >= 85 ? "#16a34a" : clamped >= 70 ? "#d97706" : "#dc2626";
+      const r = 32;
+      const c = 2 * Math.PI * r;
+      const offset = c * (1 - clamped / 100);
+      document.getElementById(elId).innerHTML = `
+        <svg viewBox="0 0 80 80" width="78" height="78">
+          <circle cx="40" cy="40" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="8"/>
+          <circle cx="40" cy="40" r="${r}" fill="none" stroke="${color}" stroke-width="8"
+            stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 40 40)"/>
+          <text x="40" y="44" text-anchor="middle" font-size="14" font-weight="800" fill="#1e293b">
+            ${clamped.toFixed(0)}%
+          </text>
+        </svg>
+      `;
+    }
+
+    function recalculate() {
+      const wMap = {};
+      QUESTIONS.forEach(q => {
+        const w = getWeight(q);
+        wMap[q.id] = w;
+
+        const badge = document.getElementById(`badge_${q.id}`);
+        const row = document.getElementById(`row_${q.id}`);
+        if (q.neutral) {
+          badge.className = "status-pill st-neutral";
+          badge.textContent = "背景參考";
+          row.classList.remove("high-risk");
+        } else if (w <= 1) {
+          badge.className = "status-pill st-ok";
+          badge.textContent = "優良 (1)";
+          row.classList.remove("high-risk");
+        } else if (w <= 30) {
+          badge.className = "status-pill st-mid";
+          badge.textContent = `中風險 (${w})`;
+          row.classList.toggle("high-risk", w >= 20);
+        } else {
+          badge.className = "status-pill st-bad";
+          badge.textContent = `高風險 (${w})`;
+          row.classList.add("high-risk");
+        }
+
+        if (onlyRisk && (q.neutral || w <= 1)) {
+          row.classList.add("hidden-row");
+        } else {
+          row.classList.remove("hidden-row");
+        }
+      });
+
+      const sumIds = ids => ids.reduce((acc, id) => acc + (wMap[id] || 0), 0);
+
+      // Exact Excel formulas from 'Resultados'
+      const e3  = sumIds(["q3","q4","q5","q6","q7","q8","q9","q10"]);
+      const g3  = ((e3 - 8) / 87) * 0.0231;
+
+      const e12 = sumIds(["q11","q12","q13","q14","q15","q16","q17","q18","q19"]);
+      const g12 = ((e12 - 9) / 705) * 0.132;
+      const i12 = (e12 / 705) * 0.132;
+
+      const e23 = sumIds(["q20","q21","q22","q23","q24","q25","q26","q27","q28"]);
+      const g23 = ((e23 - 9) / 355) * 0.1499;
+      const i23 = (e23 / 355) * 0.1499;
+
+      const e29 = sumIds(["q29","q30","q31","q32","q33","q34","q35","q36","q37","q38","q39"]);
+      const g29 = ((e29 - 10) / 925) * 0.2151;
+      const i29 = (e29 / 925) * 0.215;
+
+      const e40 = sumIds(["q40","q41","q42","q43","q44"]);
+      const g40 = ((e40 - 5) / 447) * 0.204;
+      const i40 = (e40 / 447) * 0.204;
+
+      const e45 = sumIds(["q45","q46","q47","q48","q49","q50","q51","q52","q53","q54","q55","q56","q57","q58","q59","q60","q61","q62","q63","q64"]);
+      const g45 = ((e45 - 20) / 1004) * 0.1337;
+      const i45 = (e45 / 1004) * 0.1337;
+
+      const e65 = sumIds(["q65","q66","q67","q68","q69","q70","q71","q72","q73","q74","q75","q76","q77","q78"]);
+      const g65 = ((e65 - 14) / 557) * 0.1124;
+
+      const e66 = sumIds(["q73","q74","q71"]);
+      const i66 = (e66 / 225) * 0.0562;
+
+      const e73 = e65 - e66;
+      const i73 = (e73 / 332) * 0.0562;
+
+      const e79 = sumIds(["q79","q80","q81","q82","q83","q84","q85","q86"]);
+      const g79 = ((e79 - 8) / 152) * 0.0334;
+
+      const internalRisk = Math.max(0, (g3 + g12 + g23) / 0.305);
+      const externalRisk = Math.max(0, (g29 + g40 + g45 + g65 + g79) / 0.6986);
+      const globalRisk   = Math.max(0, g3 + g12 + g23 + g29 + g40 + g45 + g65 + g79);
+
+      const internalScore = (1 - internalRisk) * 100;
+      const externalScore = (1 - externalRisk) * 100;
+      const globalScore   = (1 - globalRisk) * 100;
+
+      document.getElementById("scoreGlobal").textContent   = `${globalScore.toFixed(1)}%`;
+      document.getElementById("riskGlobal").textContent    = `綜合風險指數：${(globalRisk * 100).toFixed(1)}%`;
+      document.getElementById("scoreInternal").textContent = `${internalScore.toFixed(1)}%`;
+      document.getElementById("riskInternal").textContent  = `內部風險指數：${(internalRisk * 100).toFixed(1)}%`;
+      document.getElementById("scoreExternal").textContent = `${externalScore.toFixed(1)}%`;
+      document.getElementById("riskExternal").textContent  = `外部風險指數：${(externalRisk * 100).toFixed(1)}%`;
+
+      drawGauge("gaugeGlobal", globalScore);
+      drawGauge("gaugeInternal", internalScore);
+      drawGauge("gaugeExternal", externalScore);
+
+      // 7 Dimensions
+      const dims = [
+        { name: "管理 (Management)", score: (1 - i12) * 100 },
+        { name: "新女豬更新 (Replacement)", score: (1 - i29) * 100 },
+        { name: "精液 (Semen)", score: (1 - i40) * 100 },
+        { name: "運輸 (Transport)", score: (1 - i45) * 100 },
+        { name: "人員管理 (Personnel)", score: (1 - i66) * 100 },
+        { name: "免疫力 (Immunization)", score: (1 - i23) * 100 },
+        { name: "設施 (Facilities)", score: (1 - i73) * 100 }
+      ];
+
+      document.getElementById("dimensionBars").innerHTML = dims.map(d => {
+        const s = Math.max(0, Math.min(100, d.score));
+        return `
+          <div class="bar-row">
+            <div class="bar-label">
+              <span>${d.name}</span>
+              <span style="color:var(--primary);">${s.toFixed(2)}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${s.toFixed(2)}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // Top 5 Worst Characteristics
+      const ranked = QUESTIONS
+        .filter(q => !q.neutral)
+        .map(q => ({ ...q, w: wMap[q.id], ans: state[q.id] }))
+        .sort((a, b) => b.w - a.w)
+        .slice(0, 5);
+
+      document.getElementById("topRiskList").innerHTML = ranked.map((item, idx) => {
+        const isLow = item.w <= 1;
+        return `
+          <div class="risk-item ${isLow ? "low" : ""}">
+            <div style="display:flex; align-items:flex-start; gap:10px;">
+              <span class="risk-rank">${idx + 1}</span>
+              <div>
+                <div class="risk-q">${item.text}</div>
+                <div class="risk-a">目前選擇：<strong>${item.ans}</strong></div>
+              </div>
+            </div>
+            <span class="risk-pts">風險權重 ${item.w}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleRiskFilter() {
+      onlyRisk = !onlyRisk;
+      document.getElementById("btnFilterRisk").classList.toggle("active", onlyRisk);
+      recalculate();
+    }
+
+    function filterSection(sec, btn) {
+      document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".sec-block").forEach(el => {
+        el.style.display = (sec === "all" || el.dataset.section === sec) ? "block" : "none";
+      });
+    }
+
+    function resetDefaults() {
+      initState();
+      renderQuestionnaire();
+    }
+
+    initState();
+    renderQuestionnaire();
+  </script>
+</body>
+</html>
